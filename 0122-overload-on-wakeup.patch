@@ -17,9 +17,9 @@ diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
 index f60ef0b4ec33..39026026df7a 100644
 --- a/kernel/sched/fair.c
 +++ b/kernel/sched/fair.c
-@@ -6861,6 +6861,20 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int wake_flags)
+@@ -6861,6 +6861,20 @@ select_task_rq_fair(struct task_struct *p, int prev_cpu, int sd_flag, int wake_f
  	}
- 
+
  	rcu_read_lock();
 +
 +	if (cpu_rq(prev_cpu)->nr_running) {
@@ -38,6 +38,5 @@ index f60ef0b4ec33..39026026df7a 100644
  	for_each_domain(cpu, tmp) {
  		/*
  		 * If both 'cpu' and 'prev_cpu' are part of this domain,
--- 
+--
 https://clearlinux.org
-
