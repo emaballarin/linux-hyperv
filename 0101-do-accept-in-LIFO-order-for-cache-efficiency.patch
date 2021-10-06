@@ -4,10 +4,10 @@ Date: Thu, 13 Dec 2018 01:00:49 +0000
 Subject: [PATCH] do accept() in LIFO order for cache efficiency
 
 ---
- include/linux/wait.h            |  1 +
+ include/linux/wait.h            |  2 ++
  kernel/sched/wait.c             | 24 ++++++++++++++++++++++++
  net/ipv4/inet_connection_sock.c |  2 +-
- 3 files changed, 26 insertions(+), 1 deletion(-)
+ 3 files changed, 27 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/wait.h b/include/linux/wait.h
 index 6598ae35e1b5..100dbbcd0df9 100644
@@ -19,8 +19,16 @@ index 6598ae35e1b5..100dbbcd0df9 100644
  extern void add_wait_queue_exclusive(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
 +extern void add_wait_queue_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
  extern void remove_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
- 
+
  static inline void __add_wait_queue(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry)
+@@ -1137,6 +1138,7 @@ do {										\
+  */
+ void prepare_to_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
+ bool prepare_to_wait_exclusive(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
++void prepare_to_wait_exclusive_lifo(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
+ long prepare_to_wait_event(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry, int state);
+ void finish_wait(struct wait_queue_head *wq_head, struct wait_queue_entry *wq_entry);
+ long wait_woken(struct wait_queue_entry *wq_entry, unsigned mode, long timeout);
 diff --git a/kernel/sched/wait.c b/kernel/sched/wait.c
 index 76577d1642a5..c33f48ed2bbb 100644
 --- a/kernel/sched/wait.c
